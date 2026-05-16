@@ -1,0 +1,17 @@
+---
+title: "Samuel"
+subtitle: "Student"
+image: profile.jpg
+about: # https://quarto.org/docs/websites/website-about.html
+  template: jolla
+  links:
+    - icon: github
+      text: Github
+      href: https://github.com/samholbrook92801/portfolio
+---
+
+Portfolio
+
+## Education
+
+California State University, Fullerton \| Fullerton, CA \| Sept 2023 - June 2026
