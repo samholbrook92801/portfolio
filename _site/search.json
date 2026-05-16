@@ -1,0 +1,107 @@
+[
+  {
+    "objectID": "portfolio-q.html",
+    "href": "portfolio-q.html",
+    "title": "Patterns and Potential Biases in Student Evaluations of Professors",
+    "section": "",
+    "text": "In this project, we will be exploring whether or not students are objective in their evaluations of their professors, by investigating the relationship between overall rating a professor achieves, and whether or not students rated them as ‘hot’ or ‘cold’."
+  },
+  {
+    "objectID": "portfolio-q.html#summary",
+    "href": "portfolio-q.html#summary",
+    "title": "Patterns and Potential Biases in Student Evaluations of Professors",
+    "section": "",
+    "text": "In this project, we will be exploring whether or not students are objective in their evaluations of their professors, by investigating the relationship between overall rating a professor achieves, and whether or not students rated them as ‘hot’ or ‘cold’."
+  },
+  {
+    "objectID": "portfolio-q.html#motivation-and-context",
+    "href": "portfolio-q.html#motivation-and-context",
+    "title": "Patterns and Potential Biases in Student Evaluations of Professors",
+    "section": "Motivation and Context",
+    "text": "Motivation and Context\nOn RateMyProfessor.com, students are able to rate their professors, with one of the possible ratings being whether or not the student finds the professor to be physically attractive or not. This project will investigate whether or not this metric causes any bias in how the student rates their professor’s overall difficulty, and overall score."
+  },
+  {
+    "objectID": "portfolio-q.html#packages-used-in-this-analysis",
+    "href": "portfolio-q.html#packages-used-in-this-analysis",
+    "title": "Patterns and Potential Biases in Student Evaluations of Professors",
+    "section": "Packages Used In This Analysis",
+    "text": "Packages Used In This Analysis\n\nlibrary(here)\nlibrary(readr)\nlibrary(rsample)\nlibrary(ggplot2)\nlibrary(tune)\nlibrary(recipes)\nlibrary(workflows)\nlibrary(tidyclust)\nlibrary(GGally)\n\n\n\n\nPackage\nUse\n\n\n\n\nhere\nto easily load and save data\n\n\nreadr\nto import the CSV file data\n\n\nrsample\nto split data into training and test sets\n\n\nggplot2\nto create nice-looking and informative graphs\n\n\ntune\nto tune number of clusters in k-means model\n\n\nrecipes\nto get data ready for modeling\n\n\nworkflows\nto streamline model building\n\n\ntidyclust\nused for k-means clustering model\n\n\nGGally\nto plot k-means results"
+  },
+  {
+    "objectID": "portfolio-q.html#data-description",
+    "href": "portfolio-q.html#data-description",
+    "title": "Patterns and Potential Biases in Student Evaluations of Professors",
+    "section": "Data Description",
+    "text": "Data Description\nIn this project, we will be exploring the ratings of professors from a website called RateMyProfessor. An observation in this dataset is a professor at a university who has been rated by students who have taken one of their courses. There are 22038 observations in this dataset, with 15 variables per observation. The data was collected by researchers in order to examine the link between a professor’s research performance and student evaluations of their teaching. It was collected from RateMyProfessor.com in January of 2018. The training/test split was accomplished by using the initial_split function, randomly allocating 80% (17630) of the observations into the training set, and the remaining 20% (4408) of the observations into the testing set. This split was chosen because it allows the models to be trained a large amount of the data to learn patterns from, while still keeping a meaningful proportion reserved for testing purposes.\n\nRateMyProfessor &lt;- readr::read_csv(here::here(\"RateMyProfessor.csv\"))\nRateMyProfessor$colour = ifelse(RateMyProfessor$hotness == \"cold\", FALSE,TRUE)\nset.seed(1111)\nrmp_split = initial_split(\n  data=RateMyProfessor,\n  prop=.8 #80% in the training set\n)\n\nrmp_train = training(rmp_split)\nrmp_test = testing(rmp_split)"
+  },
+  {
+    "objectID": "portfolio-q.html#exploratory-data-analysis",
+    "href": "portfolio-q.html#exploratory-data-analysis",
+    "title": "Patterns and Potential Biases in Student Evaluations of Professors",
+    "section": "Exploratory Data Analysis",
+    "text": "Exploratory Data Analysis\nThis project will explore which factors are associated with professor ratings on RateMyProfessor.com. It will examine whether a professor’s hotness can be determined from variables such as their overall rating, perceived difficulty, their review count, discipline, gender or accent. First we examine a histogram of the overall ratings of the professors.\n\nggplot(\n  data=rmp_train,\n  mapping=aes(\n    y=colour\n    \n  )\n) + geom_bar()+\n  coord_flip()+theme(legend.position = \"none\")+\n  ylab(\"Hotness\")+xlab(\"Count\")+ggtitle(\"Total Hotness Count\")\n\n\n\n\n\n\n\n\nWe can see that the relative proportion of professors who are rated “hot” and “cold”, where FALSE is “cold” and TRUE is “hot”.\n\nggplot(data = rmp_train, aes(x = discipline, fill = !colour)) +\n  geom_bar(position = \"dodge\")+theme(legend.position='none')\n\n\n\n\n\n\n\n\nThis barchart shows the various disciplines reported in our data, with the counts of the ‘hot’ professors colored in red, and the counts for the ‘cool’ professors colored in blue. We can observe that the largest number of ‘hot’ professors are in the Social Sciences Discipline, and that the highest proportion of ‘hot’ professors are in the Humanities discipline.\n\nggplot(\n  data = rmp_train,\n  mapping = aes(\n  x = difficulty,\n  y = overall,\ncolor = factor(hotness) |&gt; relevel(ref = \"hot\")\n)\n) +\ngeom_point(alpha = 0.25) +\ngeom_smooth(method = \"lm\", se = FALSE) + # se = FALSE means no confidence bands\nlabs(\n  title = \"Professors\",\n  x = \"Difficulty Rating (1-5)\",\n  y = \"Overall Rating (1-5)\"\n) +\nscale_color_manual(\n  name = \"Chili Pepper Rating\",\n  labels = c(hot = \"Attractive\", cold = \"Less-attractive\"),\n  values = c(hot = \"red\", cold = \"blue\")\n)\n\n`geom_smooth()` using formula = 'y ~ x'\n\n\n\n\n\n\n\n\n\nFrom this scatterplot, we can see the relationship between hotness, difficulty, and overall rating. The professors labeled as “hot” are colored red, and the professors who are rated “cold” are colored in blue. At high difficulties, there are fewer professors who are rated “hot” than at lower difficulties. We can also see from the regression line that at similar difficulty ratings, less-attractive or ‘cold’ professors are predicted to have a lower overall score than ‘hot’ professors, and that this is more pronounced at higher difficulty ratings than at lower ones."
+  },
+  {
+    "objectID": "portfolio-q.html#modeling",
+    "href": "portfolio-q.html#modeling",
+    "title": "Patterns and Potential Biases in Student Evaluations of Professors",
+    "section": "Modeling",
+    "text": "Modeling\nk-Means clustering is used to identify groups within our dataset that are similar. The observations are split into k groups, so that each observation is assigned to one group, and the variation within each group is minimized. When using k-means, we seek to minimize the distance between observations within each group, where distance is defined as the Euclidean distance from each member of the group to an arbitrary point. Calculation of the distance of each observation in a group from the center is calculated iteratively, changing the center point until each subsequent calculation is identical to the one before, or a repeating pattern occurs.\n\nset.seed(12345)\n\nkmeans_model &lt;- k_means(num_clusters = tune()) |&gt;\n  set_args(nstart = 50)\n\nkmeans_recipe &lt;- recipe(~ overall + difficulty + hotness, \n                           data = rmp_train) |&gt;\n  step_BoxCox(all_numeric_predictors()) |&gt;\n  step_normalize(all_numeric_predictors()) |&gt; \n  step_dummy(all_nominal_predictors()) |&gt; \n  step_zv(all_predictors())\n\nkmeans_wflow &lt;- workflow() |&gt;\n  add_model(kmeans_model) |&gt;\n  add_recipe(kmeans_recipe)\n\nkmeans_kfold &lt;- vfold_cv(\n  data = rmp_train,\n  v = 5, repeats = 1\n)\n\nnclusters_grid &lt;- data.frame(num_clusters = seq(1,10))\n\nkmeans_tuned &lt;- tune_cluster(\n  kmeans_wflow,\n  resamples = kmeans_kfold,\n  metrics = cluster_metric_set(\n    sse_total,\n    sse_within_total, \n    sse_ratio \n  )\n)\n\n! Fold1: preprocessor 1/1, model 4/10: did not converge in 10 iterations\n\n\n! Fold2: preprocessor 1/1, model 4/10: did not converge in 10 iterations\n\n\n! Fold2: preprocessor 1/1, model 5/10: did not converge in 10 iterations\n\n\n! Fold3: preprocessor 1/1, model 5/10: did not converge in 10 iterations\n\n\n! Fold3: preprocessor 1/1, model 10/10: did not converge in 10 iterations\n\n\n! Fold4: preprocessor 1/1, model 4/10: Quick-TRANSfer stage steps exceeded maximu...\n\n\n! Fold4: preprocessor 1/1, model 10/10: Quick-TRANSfer stage steps exceeded maxim...\n\n\n! Fold5: preprocessor 1/1, model 1/10: did not converge in 10 iterations\n\n\n! Fold5: preprocessor 1/1, model 4/10: did not converge in 10 iterations\n\n\n! Fold5: preprocessor 1/1, model 10/10: did not converge in 10 iterations\n\ntuned_metrics &lt;- collect_metrics(kmeans_tuned)\n\n\ntuned_metrics |&gt;\n  filter(.metric == \"sse_ratio\") |&gt;\n  ggplot(\n    mapping = aes(x = num_clusters, y = mean)\n  ) +\n  geom_point() +\n  geom_line() +\n  labs(\n    title = \"Scree Plot\",\n    x = \"Number of Clusters\",\n    y = \"Mean WSS/TSS (5 folds)\"\n  ) +\n  scale_x_continuous(breaks = seq(1,10))\n\n\n\n\n\n\n\n\nBased on the scree plot, we select 4 clusters using the elbow method. At 4 clusters, the curve levels out, and additional clusters will not result in a more accurate model.\n\nkmeans_4clusters &lt;- kmeans_wflow |&gt;\n  finalize_workflow_tidyclust(\n    parameters = list(num_clusters = 4)\n  )\nkmeans_fit &lt;- kmeans_4clusters |&gt;\n  fit(\n    data = rmp_train\n  )\n\ncluster_assignments &lt;- bind_cols(\n  rmp_train,\n  kmeans_fit |&gt; extract_cluster_assignment()\n)\n\nkmeans_predictions &lt;- augment(\n  kmeans_fit, \n  new_data = rmp_test\n  )\nall_clusters &lt;- bind_rows(\n  cluster_assignments,\n  kmeans_predictions |&gt; rename(.cluster = .pred_cluster)\n)\nggpairs(all_clusters, \n        columns = c(\"overall\", \"difficulty\", \"hotness\"),\n        upper = list(continuous = \"points\"),\n        lower = list(continuous = \"points\"),\n        aes(color = .cluster))\n\n`stat_bin()` using `bins = 30`. Pick better value `binwidth`.\n`stat_bin()` using `bins = 30`. Pick better value `binwidth`.\n\n\n\n\n\n\n\n\n\nThe clustering results show that the professors are grouped into a blue high overall rating with low difficulty cluster, a purple high overall rating with medium difficulty cluster, a green medium/low overall rating with high difficulty cluster, and a red high overall rating with medium/low difficulty cluster. We are also able to observe that blue and purple clusters are more closely associated with being rated as “hot” and high overall rating, while the red and green clusters are associated with being rated as “cold” with lower overall rating."
+  },
+  {
+    "objectID": "portfolio-q.html#insights",
+    "href": "portfolio-q.html#insights",
+    "title": "Patterns and Potential Biases in Student Evaluations of Professors",
+    "section": "Insights",
+    "text": "Insights\nWe can see from the analysis performed that students do seem to have a bias when giving an overall rating to professors based on whether they consider them to be ‘hot’ or ‘cold’. From our k-means clustering model, we saw that the majority of ‘hot’ professors were located in groups that were associated with a high overall rating, and a medium to low difficulty rating. This shows that a student’s perception of how successful a class was in teaching can be influenced by a factor that should not have an effect on their understanding and comprehension of the material covered in the class. We also saw in our exploratory data analysis that the majority of ‘hot’ professors are given a higher overall score at the same level of difficulty as ‘cold’ professors, further showing that students are not objective in their evaluations of a course as a whole.\n\nLimitations and Future Work\nA limitation behind using data collected from RateMyProfessor.com is that any ratings or opinions collected are subjective, and may not accurately reflect a professor’s true performance. There is also inherent bias, as the collected data is solely from students who chose to spend the time to leave a rating, so the insights gleaned may not be an accurate representation of the population. The rating of ‘hotness’ that was looked at throughout this project is also entirely subjective to each student, and students may not agree on which professors they would report as ‘hot’ or not. The assumptions of k-nearest neighbors were only partially justified, as the subjective nature of the ratings means that professors with similar scores across different variables may not actually be similar to each other."
+  },
+  {
+    "objectID": "website/projects/index.html",
+    "href": "website/projects/index.html",
+    "title": "Projects",
+    "section": "",
+    "text": "Predicting House Prices with Machine Learning\n\n\n\nPython\n\nMachine Learning\n\nData Cleaning\n\n\n\nThis project involves using machine learning algorithms to predict house prices based on various features such as location, size, and amenities. It includes data cleaning, feature engineering, and model selection.\n\n\n\nJan 1, 2024\n\n\n\n\n\n\n\n\n\n\n\n\n\nCustomer Segmentation Using Clustering Techniques\n\n\n\nR\n\nMachine Learning\n\nClustering\n\nStatistical Modelling\n\n\n\nThis project focuses on segmenting customers into different groups based on their purchasing behavior and demographics. It uses clustering algorithms like K-means and hierarchical clustering to identify distinct customer segments.\n\n\n\nApr 1, 2024\n\n\n\n\n\n\n\n\n\n\n\n\n\nVisualizing Global CO2 Emissions\n\n\n\nR\n\nData Visualization\n\nEnvironmental Science\n\n\n\nThis project involves creating visualizations to show trends in global CO2 emissions over time. It includes data extraction from public databases, data cleaning, and using visualization libraries to create interactive charts and graphs.\n\n\n\nJul 1, 2024\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "website/blog/third-post/index.html",
+    "href": "website/blog/third-post/index.html",
+    "title": "Third Blog Post",
+    "section": "",
+    "text": "The source for any page in your website could also be a Jupyter Notebook. This one is third-post/index.ipynb.\nHere’s an example I borrowed from the Seaborn docs:\n\nimport seaborn as sns\n\nsns.set_theme(style=\"whitegrid\")\n\n# Load the diamonds dataset\ndiamonds = sns.load_dataset(\"diamonds\")\n\n# Plot the distribution of clarity ratings, conditional on carat\nsns.displot(\n    data=diamonds,\n    x=\"carat\", hue=\"cut\",\n    kind=\"kde\", height=4, aspect=1.5,\n    multiple=\"fill\", clip=(0, None),\n    palette=\"ch:rot=-.25,hue=1,light=.75\",   \n)"
+  },
+  {
+    "objectID": "website/blog/first-post/index.html",
+    "href": "website/blog/first-post/index.html",
+    "title": "First Post",
+    "section": "",
+    "text": "Sed risus ultricies tristique nulla aliquet. Neque volutpat ac tincidunt vitae semper quis lectus nulla.\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Enim sed faucibus turpis in eu mi bibendum neque. Ac orci phasellus egestas tellus rutrum tellus pellentesque eu. Velit sed ullamcorper morbi tincidunt ornare massa. Sagittis id consectetur purus ut faucibus pulvinar elementum integer. Tincidunt nunc pulvinar sapien et ligula ullamcorper malesuada proin libero. Lobortis feugiat vivamus at augue eget arcu. Aliquam ut porttitor leo a diam sollicitudin tempor id eu. Mauris a diam maecenas sed enim ut sem viverra aliquet. Enim ut tellus elementum sagittis vitae et leo duis. Molestie at elementum eu facilisis sed odio morbi quis commodo. Sapien pellentesque habitant morbi tristique senectus. Quam vulputate dignissim suspendisse in est. Nulla pellentesque dignissim enim sit amet venenatis urna cursus eget.\nVelit aliquet sagittis id consectetur purus ut faucibus pulvinar elementum. Viverra mauris in aliquam sem fringilla ut morbi tincidunt augue. Tortor at auctor urna nunc id. Sit amet consectetur adipiscing elit duis tristique sollicitudin. Aliquet nibh praesent tristique magna sit amet purus. Tristique senectus et netus et malesuada fames ac turpis. Hac habitasse platea dictumst quisque. Auctor neque vitae tempus quam pellentesque nec nam aliquam. Ultrices tincidunt arcu non sodales neque sodales ut etiam. Iaculis at erat pellentesque adipiscing. Cras tincidunt lobortis feugiat vivamus. Nisi est sit amet facilisis magna etiam. Pharetra pharetra massa massa ultricies mi quis hendrerit. Vitae sapien pellentesque habitant morbi tristique senectus. Ornare aenean euismod elementum nisi quis eleifend quam adipiscing vitae."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "website/blog/second-post/index.html",
+    "href": "website/blog/second-post/index.html",
+    "title": "Second Post",
+    "section": "",
+    "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis imperdiet massa tincidunt nunc pulvinar sapien et ligula. Amet cursus sit amet dictum sit amet. Eget duis at tellus at urna condimentum. Convallis aenean et tortor at risus viverra. Tincidunt ornare massa eget egestas purus viverra accumsan. Et malesuada fames ac turpis egestas. At imperdiet dui accumsan sit amet. Ut ornare lectus sit amet est placerat. Enim nulla aliquet porttitor lacus luctus accumsan tortor posuere. Duis ultricies lacus sed turpis tincidunt id aliquet risus. Mattis enim ut tellus elementum sagittis. Dui id ornare arcu odio ut. Natoque penatibus et magnis dis. Libero justo laoreet sit amet cursus sit. Sed faucibus turpis in eu. Tempus iaculis urna id volutpat lacus laoreet.\nPhasellus vestibulum lorem sed risus. Eget felis eget nunc lobortis mattis. Sit amet aliquam id diam maecenas ultricies. Egestas maecenas pharetra convallis posuere morbi. Etiam erat velit scelerisque in dictum non consectetur a erat. Cras fermentum odio eu feugiat pretium nibh ipsum consequat. Viverra accumsan in nisl nisi scelerisque. Et netus et malesuada fames ac. Amet tellus cras adipiscing enim eu turpis egestas pretium aenean. Eget lorem dolor sed viverra ipsum nunc aliquet. Ultrices dui sapien eget mi proin sed libero enim sed. Ultricies mi eget mauris pharetra et ultrices neque. Ipsum suspendisse ultrices gravida dictum. A arcu cursus vitae congue mauris rhoncus aenean vel. Gravida arcu ac tortor dignissim convallis. Nulla posuere sollicitudin aliquam ultrices."
+  },
+  {
+    "objectID": "website/index.html",
+    "href": "website/index.html",
+    "title": "Samuel",
+    "section": "",
+    "text": "Portfolio"
+  },
+  {
+    "objectID": "website/index.html#education",
+    "href": "website/index.html#education",
+    "title": "Samuel",
+    "section": "Education",
+    "text": "Education\nCalifornia State University, Fullerton | Fullerton, CA | Sept 2023 - June 2026"
+  }
+]

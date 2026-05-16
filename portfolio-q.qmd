@@ -13,12 +13,10 @@ In this project, we will be exploring whether or not students are objective in t
 #| echo: false
 #| message: false
 
-# change this to the location of your Quarto file containing your project; then delete this comment
-here::i_am("math-437-project-template.qmd")
+#here::i_am("math-437-project-template.qmd")
 ```
 
-This section describes what you are investigating in your project and why you are investigating it. You should provide enough contextual background and information that someone with a limited background can understand the broad outlines of the topic being investigated.
-On RateMyProfessor.com, students are able to rate their professors
+On RateMyProfessor.com, students are able to rate their professors, with one of the possible ratings being whether or not the student finds the professor to be physically attractive or not. This project will investigate whether or not this metric causes any bias in how the student rates their professor's overall difficulty, and overall score.
 
 
 ## Packages Used In This Analysis
